@@ -56,13 +56,14 @@ class Fireworks extends Item {
 		$this->setNamedTagEntry($tag);
 	}
 
-	public function addExplosion(int $type, string $color, string $fade = "", int $flicker = 0, int $trail = 0): void {
+    public function addExplosion(int $type, string $color, string $fade = "", bool $flicker = false, bool $trail = false): void
+    {
 		$explosion = new CompoundTag();
 		$explosion->setByte("FireworkType", $type);
 		$explosion->setByteArray("FireworkColor", $color);
 		$explosion->setByteArray("FireworkFade", $fade);
-		$explosion->setByte("FireworkFlicker", $flicker);
-		$explosion->setByte("FireworkTrail", $trail);
+        $explosion->setByte("FireworkFlicker", $flicker ? 1 : 0);
+        $explosion->setByte("FireworkTrail", $trail ? 1 : 0);
 
 		$tag = $this->getExplosionsTag();
 		$explosions = $tag->getListTag("Explosions") ?? new ListTag("Explosions");
