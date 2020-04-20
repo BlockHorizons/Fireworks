@@ -6,14 +6,15 @@ namespace BlockHorizons\Fireworks\entity;
 
 use BlockHorizons\Fireworks\item\Fireworks;
 use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\world\World;
 
 class FireworksRocket extends Entity {
 
-	public const NETWORK_ID = Entity::FIREWORKS_ROCKET;
+	public const NETWORK_ID = EntityLegacyIds::FIREWORKS_ROCKET;
 
 	public const DATA_FIREWORK_ITEM = 16; //firework item
 
@@ -23,15 +24,18 @@ class FireworksRocket extends Entity {
 	/** @var int */
 	protected $lifeTime = 0;
 
-	public function __construct(Level $level, CompoundTag $nbt, ?Fireworks $fireworks = null){
-		parent::__construct($level, $nbt);
+	public function __construct(World $world, CompoundTag $nbt, ?Fireworks $fireworks = null){
+		parent::__construct($world, $nbt);
 
-		if($fireworks !== null && $fireworks->getNamedTagEntry("Fireworks") instanceof CompoundTag) {
-            $this->propertyManager->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
+		if($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
+            $this->networkProperties->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
 			$this->setLifeTime($fireworks->getRandomizedFlightDuration());
 		}
 
-       	$level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LAUNCH);
+		$packet = new LevelSoundEventPacket();
+		$packet->sound = LevelSoundEventPacket::SOUND_LAUNCH;
+		$packet->position = $this->location->asVector3();
+       	$world->broadcastPacketToViewers($this->location, $packet);
 	}
 
 	protected function tryChangeMovement(): void {
