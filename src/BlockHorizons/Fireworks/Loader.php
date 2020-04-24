@@ -14,7 +14,7 @@ use pocketmine\plugin\PluginBase;
 class Loader extends PluginBase {
 
 	protected function onEnable(): void {
-		ItemFactory::register(new Fireworks(), true);
+		ItemFactory::getInstance()->register(new Fireworks(), true);
 		EntityFactory::register(FireworksRocket::class, ["FireworksRocket"]);
 	}
 }
