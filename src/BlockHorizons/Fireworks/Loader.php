@@ -15,6 +15,6 @@ class Loader extends PluginBase {
 
 	protected function onEnable(): void {
 		ItemFactory::getInstance()->register(new Fireworks(), true);
-		EntityFactory::register(FireworksRocket::class, ["FireworksRocket"]);
+		EntityFactory::getInstance()->register(FireworksRocket::class, ["FireworksRocket"]);
 	}
 }

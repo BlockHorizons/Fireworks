@@ -84,7 +84,7 @@ class Fireworks extends Item {
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult {
 		$nbt = EntityFactory::createBaseNBT($blockReplace->getPos()->add(0.5, 0, 0.5), new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
-		EntityFactory::create(FireworksRocket::class, $player->getWorld(), $nbt, $this)->spawnToAll();
+		EntityFactory::getInstance()->create(FireworksRocket::class, $player->getWorld(), $nbt, $this)->spawnToAll();
 		$this->pop();
 		return ItemUseResult::SUCCESS();
 	}
