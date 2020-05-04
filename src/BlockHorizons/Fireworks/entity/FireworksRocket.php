@@ -72,6 +72,9 @@ class FireworksRocket extends Entity {
 	}
 
 	protected function doExplosionAnimation(): void {
-		$this->broadcastEntityEvent(ActorEventPacket::FIREWORK_PARTICLES);
+		$viewers = $this->getViewers();
+		if(count($viewers) > 0){
+			$this->server->broadcastPackets($viewers, [ActorEventPacket::create($this->id, ActorEventPacket::FIREWORK_PARTICLES, 0)]);
+		}
 	}
 }
