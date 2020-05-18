@@ -14,9 +14,11 @@ use pocketmine\world\World;
 
 class FireworksRocket extends Entity {
 
-	public const NETWORK_ID = EntityLegacyIds::FIREWORKS_ROCKET;
-
 	public const DATA_FIREWORK_ITEM = 16; //firework item
+
+	public static function getNetworkTypeId() : int{
+		return EntityLegacyIds::FIREWORKS_ROCKET;
+	}
 
 	public $width = 0.25;
 	public $height = 0.25;
