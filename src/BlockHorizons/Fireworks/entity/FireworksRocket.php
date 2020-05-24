@@ -30,7 +30,7 @@ class FireworksRocket extends Entity {
 		parent::__construct($world, $nbt);
 
 		if($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
-            $this->networkProperties->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
+            $this->getNetworkProperties()->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
 			$this->setLifeTime($fireworks->getRandomizedFlightDuration());
 		}
 
