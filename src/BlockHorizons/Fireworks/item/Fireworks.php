@@ -6,7 +6,7 @@ namespace BlockHorizons\Fireworks\item;
 
 use BlockHorizons\Fireworks\entity\FireworksRocket;
 use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ItemUseResult;
@@ -83,8 +83,9 @@ class Fireworks extends Item {
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult {
-		$nbt = EntityFactory::createBaseNBT($blockReplace->getPos()->add(0.5, 0, 0.5), new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
-		EntityFactory::getInstance()->create(FireworksRocket::class, $player->getWorld(), $nbt, $this)->spawnToAll();
+		$rocket = new FireworksRocket(Location::fromObject($blockReplace->getPos()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
+		$rocket->setMotion(new Vector3(0.001, 0.05, 0.001));
+		$rocket->spawnToAll();
 		$this->pop();
 		return ItemUseResult::SUCCESS();
 	}
