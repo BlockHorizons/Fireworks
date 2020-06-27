@@ -26,12 +26,13 @@ class FireworksRocket extends Entity {
 	protected $lifeTime = 0;
 
 	public function __construct(Location $location, ?Fireworks $fireworks = null, ?int $lifeTime = null){
+		parent::__construct($location);
+
 		if($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
 			$this->getNetworkProperties()->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
 			$this->setLifeTime($lifeTime ?? $fireworks->getRandomizedFlightDuration());
 		}
 
-		parent::__construct($location);
 		$packet = new LevelSoundEventPacket();
 		$packet->sound = LevelSoundEventPacket::SOUND_LAUNCH;
 		$packet->position = $this->location->asVector3();
