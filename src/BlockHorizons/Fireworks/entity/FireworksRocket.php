@@ -36,7 +36,7 @@ class FireworksRocket extends Entity {
 		$packet = new LevelSoundEventPacket();
 		$packet->sound = LevelSoundEventPacket::SOUND_LAUNCH;
 		$packet->position = $this->location->asVector3();
-		$location->getWorldNonNull()->broadcastPacketToViewers($this->location, $packet);
+		$location->getWorld()->broadcastPacketToViewers($this->location, $packet);
 	}
 
 	protected function tryChangeMovement(): void {

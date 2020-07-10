@@ -8,7 +8,6 @@ use BlockHorizons\Fireworks\entity\FireworksRocket;
 use pocketmine\block\Block;
 use pocketmine\entity\Location;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -40,10 +39,6 @@ class Fireworks extends Item {
 	public const COLOR_DARK_PINK = "\x0d";
 	public const COLOR_GOLD = "\x0e";
 	public const COLOR_WHITE = "\x0f";
-
-	public function __construct(int $meta = 0) {
-		parent::__construct(ItemIds::FIREWORKS, $meta, "Fireworks");
-	}
 
 	public function getFlightDuration(): int {
 		return $this->getExplosionsTag()->getByte("Flight", 1);
