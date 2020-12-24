@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace BlockHorizons\Fireworks\entity\animation;
+
 use BlockHorizons\Fireworks\entity\FireworksRocket;
 use pocketmine\entity\animation\Animation;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;

@@ -1,18 +1,20 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace BlockHorizons\Fireworks\entity;
 
+use BlockHorizons\Fireworks\entity\animation\FireworkParticleAnimation;
 use BlockHorizons\Fireworks\item\Fireworks;
-use FireworkParticleAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 
-class FireworksRocket extends Entity {
+class FireworksRocket extends Entity
+{
 
 	public const DATA_FIREWORK_ITEM = 16; //firework item
 
@@ -26,16 +28,16 @@ class FireworksRocket extends Entity {
 
 	/** @var int */
 	protected $lifeTime = 0;
-	/** @var Fireworks|null */
+	/** @var Fireworks */
 	protected $fireworks;
 
-	public function __construct(Location $location, ?Fireworks $fireworks = null, ?int $lifeTime = null)
+	public function __construct(Location $location, Fireworks $fireworks, ?int $lifeTime = null)
 	{
-		parent::__construct($location);
-
 		$this->fireworks = $fireworks;
+		parent::__construct($location, $fireworks->getNamedTag());
+		$this->setMotion(new Vector3(0.001, 0.05, 0.001));
 
-		if ($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
+		if ($fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
 			$this->setLifeTime($lifeTime ?? $fireworks->getRandomizedFlightDuration());
 		}
 
@@ -45,26 +47,29 @@ class FireworksRocket extends Entity {
 		$location->getWorld()->broadcastPacketToViewers($this->location, $packet);
 	}
 
-	protected function tryChangeMovement(): void {
+	protected function tryChangeMovement(): void
+	{
 		$this->motion->x *= 1.15;
 		$this->motion->y += 0.04;
 		$this->motion->z *= 1.15;
 	}
 
-	public function entityBaseTick(int $tickDiff = 1): bool {
-		if($this->closed) {
+	public function entityBaseTick(int $tickDiff = 1): bool
+	{
+		if ($this->closed) {
 			return false;
 		}
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
-		if($this->doLifeTimeTick()) {
+		if ($this->doLifeTimeTick()) {
 			$hasUpdate = true;
 		}
 
 		return $hasUpdate;
 	}
 
-	public function setLifeTime(int $life): void {
+	public function setLifeTime(int $life): void
+	{
 		$this->lifeTime = $life;
 	}
 
