@@ -1,6 +1,7 @@
 --- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/BlockHorizons/Fireworks
 branches:
-- master
+  - master
+- "4.0"
 projects:
   Fireworks:
     path: ""
