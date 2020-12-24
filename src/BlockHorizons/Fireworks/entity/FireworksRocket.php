@@ -5,17 +5,19 @@ declare(strict_types = 1);
 namespace BlockHorizons\Fireworks\entity;
 
 use BlockHorizons\Fireworks\item\Fireworks;
+use FireworkParticleAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
-use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 
 class FireworksRocket extends Entity {
 
 	public const DATA_FIREWORK_ITEM = 16; //firework item
 
-	public static function getNetworkTypeId() : string{
+	public static function getNetworkTypeId(): string
+	{
 		return EntityIds::FIREWORKS_ROCKET;
 	}
 
@@ -24,12 +26,16 @@ class FireworksRocket extends Entity {
 
 	/** @var int */
 	protected $lifeTime = 0;
+	/** @var Fireworks|null */
+	protected $fireworks;
 
-	public function __construct(Location $location, ?Fireworks $fireworks = null, ?int $lifeTime = null){
+	public function __construct(Location $location, ?Fireworks $fireworks = null, ?int $lifeTime = null)
+	{
 		parent::__construct($location);
 
-		if($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
-			$this->getNetworkProperties()->setCompoundTag(self::DATA_FIREWORK_ITEM, $fireworks->getNamedTag());
+		$this->fireworks = $fireworks;
+
+		if ($fireworks !== null && $fireworks->getNamedTag()->getCompoundTag("Fireworks") !== null) {
 			$this->setLifeTime($lifeTime ?? $fireworks->getRandomizedFlightDuration());
 		}
 
@@ -62,8 +68,9 @@ class FireworksRocket extends Entity {
 		$this->lifeTime = $life;
 	}
 
-	protected function doLifeTimeTick(): bool {
-		if(!$this->isFlaggedForDespawn() and --$this->lifeTime < 0) {
+	protected function doLifeTimeTick(): bool
+	{
+		if (--$this->lifeTime < 0 && !$this->isFlaggedForDespawn()) {
 			$this->doExplosionAnimation();
 			$this->flagForDespawn();
 			return true;
@@ -72,10 +79,14 @@ class FireworksRocket extends Entity {
 		return false;
 	}
 
-	protected function doExplosionAnimation(): void {
-		$viewers = $this->getViewers();
-		if(count($viewers) > 0){
-			$this->server->broadcastPackets($viewers, [ActorEventPacket::create($this->id, ActorEventPacket::FIREWORK_PARTICLES, 0)]);
-		}
+	protected function doExplosionAnimation(): void
+	{
+		$this->broadcastAnimation(new FireworkParticleAnimation($this), $this->getViewers());
+	}
+
+	public function syncNetworkData(EntityMetadataCollection $properties): void
+	{
+		parent::syncNetworkData($properties);
+		$properties->setCompoundTag(self::DATA_FIREWORK_ITEM, $this->fireworks->getNamedTag());
 	}
 }

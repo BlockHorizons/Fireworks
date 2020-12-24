@@ -3,7 +3,8 @@ Adds fireworks to your PocketMine server<br>
 Download the compiled `.phar` format of Fireworks from the [Poggit CI](https://poggit.pmmp.io/ci/BlockHorizons/Fireworks).
 ## API
 ### Adding firework items to a player's inventory
-Giving players fireworks is easy as pie. Here are some examples (where `$player` is a `\pocketmine\Player` object):
+Giving players fireworks is easy as pie. Here are some examples (where `$player` is a `\pocketmine\player\Player`
+object):
 - **Base firework**
 ```php
 /** @var Fireworks $fw */

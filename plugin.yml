@@ -1,4 +1,4 @@
 name: Fireworks
 main: BlockHorizons\Fireworks\Loader
 api: 4.0.0
-version: 0.0.3
+version: 0.0.4
