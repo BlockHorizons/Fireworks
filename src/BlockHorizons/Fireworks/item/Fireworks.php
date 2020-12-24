@@ -69,19 +69,22 @@ class Fireworks extends Item {
 		);
 	}
 
-	protected function getExplosionsTag(): CompoundTag {
+	protected function getExplosionsTag(): CompoundTag
+	{
 		$tag = $this->getNamedTag()->getCompoundTag("Fireworks");
-		if($tag === null){
+		if ($tag === null) {
 			$this->getNamedTag()->setTag("Fireworks", $tag = CompoundTag::create());
 		}
 		return $tag;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult {
-		$rocket = new FireworksRocket(Location::fromObject($blockReplace->getPos()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
-		$rocket->setMotion(new Vector3(0.001, 0.05, 0.001));
-		$rocket->spawnToAll();
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult
+	{
+		$entity = new FireworksRocket(Location::fromObject($blockReplace->getPos()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
+
 		$this->pop();
+		$entity->spawnToAll();
+		//TODO: what if the entity was marked for deletion?
 		return ItemUseResult::SUCCESS();
 	}
 }
