@@ -9,6 +9,7 @@ use BlockHorizons\Fireworks\item\Fireworks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -41,10 +42,7 @@ class FireworksRocket extends Entity
 			$this->setLifeTime($lifeTime ?? $fireworks->getRandomizedFlightDuration());
 		}
 
-		$packet = new LevelSoundEventPacket();
-		$packet->sound = LevelSoundEventPacket::SOUND_LAUNCH;
-		$packet->position = $this->location->asVector3();
-		$location->getWorld()->broadcastPacketToViewers($this->location, $packet);
+		$location->getWorld()->broadcastPacketToViewers($this->location, LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_LAUNCH, $this->location->asVector3()));
 	}
 
 	protected function tryChangeMovement(): void
@@ -77,6 +75,7 @@ class FireworksRocket extends Entity
 	{
 		if (--$this->lifeTime < 0 && !$this->isFlaggedForDespawn()) {
 			$this->doExplosionAnimation();
+			$this->playSounds();
 			$this->flagForDespawn();
 			return true;
 		}
@@ -87,6 +86,32 @@ class FireworksRocket extends Entity
 	protected function doExplosionAnimation(): void
 	{
 		$this->broadcastAnimation(new FireworkParticleAnimation($this), $this->getViewers());
+	}
+
+	public function playSounds(): void
+	{
+		// This late in, there's 0 chance fireworks tag is null
+		$fireworksTag = $this->fireworks->getNamedTag()->getCompoundTag("Fireworks");
+		$explosionsTag = $fireworksTag->getListTag("Explosions");
+		if ($explosionsTag === null) {
+			// We don't throw an error here since there are fireworks that can die without noise or particles,
+			// which means they are lacking an explosion tag.
+			return;
+		}
+
+		foreach ($explosionsTag->getValue() as $info) {
+			if ($info instanceof CompoundTag) {
+				if ($info->getByte("FireworkType", 0) === Fireworks::TYPE_HUGE_SPHERE) {
+					$this->getWorld()->broadcastPacketToViewers($this->location, LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_LARGE_BLAST, $this->location->asVector3()));
+				} else {
+					$this->getWorld()->broadcastPacketToViewers($this->location, LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BLAST, $this->location->asVector3()));
+				}
+
+				if ($info->getByte("FireworkFlicker", 0) === 1) {
+					$this->getWorld()->broadcastPacketToViewers($this->location, LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_TWINKLE, $this->location->asVector3()));
+				}
+			}
+		}
 	}
 
 	public function syncNetworkData(EntityMetadataCollection $properties): void
