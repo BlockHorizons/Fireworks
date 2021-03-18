@@ -7,6 +7,7 @@ namespace BlockHorizons\Fireworks\entity;
 use BlockHorizons\Fireworks\entity\animation\FireworkParticleAnimation;
 use BlockHorizons\Fireworks\item\Fireworks;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -23,9 +24,6 @@ class FireworksRocket extends Entity
 	{
 		return EntityIds::FIREWORKS_ROCKET;
 	}
-
-	public $width = 0.25;
-	public $height = 0.25;
 
 	/** @var int */
 	protected $lifeTime = 0;
@@ -118,5 +116,10 @@ class FireworksRocket extends Entity
 	{
 		parent::syncNetworkData($properties);
 		$properties->setCompoundTag(self::DATA_FIREWORK_ITEM, $this->fireworks->getNamedTag());
+	}
+
+	protected function getInitialSizeInfo(): EntitySizeInfo
+	{
+		return new EntitySizeInfo(0.25, 0.25);
 	}
 }
