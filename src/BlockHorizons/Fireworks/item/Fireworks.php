@@ -80,7 +80,7 @@ class Fireworks extends Item {
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult
 	{
-		$entity = new FireworksRocket(Location::fromObject($blockReplace->getPos()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
+		$entity = new FireworksRocket(Location::fromObject($blockReplace->getPosition()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
 
 		$this->pop();
 		$entity->spawnToAll();
