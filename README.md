@@ -8,13 +8,13 @@ object):
 - **Base firework**
 ```php
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 $player->getInventory()->addItem($fw);
 ```
 - **Sphere firework with color fade from blue to cyan**
 ```php
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 
 // addExplosion Parameters:
 // int $type: Type of explosion, 0 - 4, see Fireworks::TYPE_* constants
@@ -29,7 +29,7 @@ $player->getInventory()->addItem($fw);
 - **Green creeper firework, flying higher**
 ```php
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 $fw->addExplosion(Fireworks::TYPE_CREEPER_HEAD, Fireworks::COLOR_GREEN, "", false, false);
 $fw->setFlightDuration(2);
 $player->getInventory()->addItem($fw);
@@ -37,7 +37,7 @@ $player->getInventory()->addItem($fw);
 - **High flying flashing star firework with trail**
 ```php
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 $fw->addExplosion(Fireworks::TYPE_STAR, Fireworks::COLOR_YELLOW, "", true, true);
 $fw->setFlightDuration(3);
 $player->getInventory()->addItem($fw);
@@ -45,7 +45,7 @@ $player->getInventory()->addItem($fw);
 - **All-colored sphere firework with trail**
 ```php
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 $fw->addExplosion(Fireworks::TYPE_SMALL_SPHERE, Fireworks::COLOR_BLACK, "", false, true);
 $fw->addExplosion(Fireworks::TYPE_SMALL_SPHERE, Fireworks::COLOR_RED, "", false, true);
 $fw->addExplosion(Fireworks::TYPE_SMALL_SPHERE, Fireworks::COLOR_DARK_GREEN, "", false, true);
@@ -70,18 +70,18 @@ This example spawns a green creeper firework at the default world's spawn
 ```php
 // Create the type of firework item to be launched
 /** @var Fireworks $fw */
-$fw = ItemFactory::get(Item::FIREWORKS);
+$fw = ItemFactory::getInstance()->get(ItemIds::FIREWORKS);
 $fw->addExplosion(Fireworks::TYPE_CREEPER_HEAD, Fireworks::COLOR_GREEN, "", false, false);
 $fw->setFlightDuration(2);
 
 // Use whatever level you'd like here. Must be loaded
-$level = Server::getInstance()->getDefaultLevel();
+$world = Server::getInstance()->getWorldManager()->getDefaultWorld();
 // Choose some coordinates
-$vector3 = $level->getSpawnLocation()->add(0.5, 1, 0.5);
+$vector3 = $world->getSpawnLocation()->add(0.5, 1, 0.5);
 // Create the NBT data
 $nbt = FireworksRocket::createBaseNBT($vector3, new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
 // Construct and spawn
-$entity = FireworksRocket::createEntity("FireworksRocket", $level, $nbt, $fw);
+$entity = FireworksRocket::createEntity("FireworksRocket", $world, $nbt, $fw);
 if ($entity instanceof FireworksRocket) {
     $entity->spawnToAll();
 }
