@@ -79,7 +79,21 @@ $world = Server::getInstance()->getWorldManager()->getDefaultWorld();
 // Choose some coordinates
 $vector3 = $world->getSpawnLocation()->add(0.5, 1, 0.5);
 // Create the NBT data
-$nbt = FireworksRocket::createBaseNBT($vector3, new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
+$nbt = CompoundTag::create()
+	->setTag("Pos", new ListTag([
+		new DoubleTag($vector3->getX()),
+		new DoubleTag($vector3->getY()),
+		new DoubleTag($vector3->getZ())
+        ]))
+	->setTag("Motion", new ListTag([
+		new DoubleTag(0.001),
+		new DoubleTag(0.05),
+		new DoubleTag(0.001)
+	]))
+	->setTag("Rotation", new ListTag([
+		new FloatTag(lcg_value() * 360),
+		new FloatTag(90)
+	]));
 // Construct and spawn
 $entity = FireworksRocket::createEntity("FireworksRocket", $world, $nbt, $fw);
 if ($entity instanceof FireworksRocket) {
