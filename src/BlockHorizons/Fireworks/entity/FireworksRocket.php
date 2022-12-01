@@ -45,6 +45,14 @@ class FireworksRocket extends Entity
 		$location->getWorld()->broadcastPacketToViewers($this->location, LevelSoundEventPacket::nonActorSound(LevelSoundEvent::LAUNCH, $this->location->asVector3(), false));
 	}
 
+	protected function getInitialDragMultiplier(): float{
+		return 0.99;
+	}
+
+	protected function getInitialGravity(): float{
+		return 0.05;
+	}
+
 	protected function tryChangeMovement(): void
 	{
 		$this->motion->x *= 1.15;
