@@ -53,6 +53,14 @@ class FireworksRocket extends Entity
 		return 0.05;
 	}
 
+	/**
+	 * TODO: The entity should be saved and loaded, but this is not possible.
+	 * @see https://bugs.mojang.com/browse/MCPE-165230
+	 */
+	public function canSaveWithChunk(): bool{
+		return false;
+	}
+
 	protected function tryChangeMovement(): void
 	{
 		$this->motion->x *= 1.15;
