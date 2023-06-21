@@ -4,21 +4,21 @@ declare(strict_types = 1);
 
 namespace BlockHorizons\Fireworks;
 
-use BlockHorizons\Fireworks\entity\FireworksRocket;
 use BlockHorizons\Fireworks\item\Fireworks;
-use pocketmine\entity\Entity;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\data\bedrock\item\ItemTypeNames;
+use pocketmine\data\bedrock\item\SavedItemData;
+use pocketmine\item\ItemIdentifier;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\plugin\PluginBase;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 
-class Loader extends PluginBase {
+class Loader extends PluginBase
+{
 
 	public function onEnable(): void
 	{
-		ItemFactory::registerItem(new Fireworks(), true);
-		Item::initCreativeItems(); //will load firework rockets from pocketmine's resources folder
-		if (!Entity::registerEntity(FireworksRocket::class, false, ["FireworksRocket", "minecraft:fireworks_rocket"])) {
-			$this->getLogger()->error("Failed to register FireworksRocket entity with savename 'FireworksRocket'");
-		}
+		$fireworks = new Fireworks(new ItemIdentifier(ItemTypeIds::newId()), "Fireworks");
+		GlobalItemDataHandlers::getSerializer()->map($fireworks, static fn() => new SavedItemData(ItemTypeNames::FIREWORK_ROCKET));
+		GlobalItemDataHandlers::getDeserializer()->map(ItemTypeNames::FIREWORK_ROCKET, static fn() => clone $fireworks);
 	}
 }
