@@ -1,5 +1,9 @@
 # Fireworks
 Adds fireworks to your PocketMine server<br>
+
+> [!NOTE]
+> This repo is no longer required as Fireworks are [now implemented in PMMP](https://github.com/pmmp/PocketMine-MP/pull/5455).
+
 Download the compiled `.phar` format of Fireworks from the [Poggit CI](https://poggit.pmmp.io/ci/BlockHorizons/Fireworks).
 ## API
 ### Adding firework items to a player's inventory
