@@ -4,13 +4,15 @@ declare(strict_types = 1);
 
 namespace BlockHorizons\Fireworks\item;
 
+use BlockHorizons\Fireworks\entity\FireworksRocket;
 use pocketmine\block\Block;
-use pocketmine\entity\Entity;
+use pocketmine\entity\Location;
 use pocketmine\item\Item;
+use pocketmine\item\ItemUseResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Fireworks extends Item {
 
@@ -38,10 +40,6 @@ class Fireworks extends Item {
 	public const COLOR_GOLD = "\x0e";
 	public const COLOR_WHITE = "\x0f";
 
-	public function __construct(int $meta = 0) {
-		parent::__construct(self::FIREWORKS, $meta, "Fireworks");
-	}
-
 	public function getFlightDuration(): int {
 		return $this->getExplosionsTag()->getByte("Flight", 1);
 	}
@@ -51,41 +49,42 @@ class Fireworks extends Item {
 	}
 
 	public function setFlightDuration(int $duration): void {
-		$tag = $this->getExplosionsTag();
-		$tag->setByte("Flight", $duration);
-		$this->setNamedTagEntry($tag);
+		$this->getExplosionsTag()->setByte("Flight", $duration);
 	}
 
     public function addExplosion(int $type, string $color, string $fade = "", bool $flicker = false, bool $trail = false): void
     {
-		$explosion = new CompoundTag();
-		$explosion->setByte("FireworkType", $type);
-		$explosion->setByteArray("FireworkColor", $color);
-		$explosion->setByteArray("FireworkFade", $fade);
-        $explosion->setByte("FireworkFlicker", $flicker ? 1 : 0);
-        $explosion->setByte("FireworkTrail", $trail ? 1 : 0);
-
 		$tag = $this->getExplosionsTag();
-		$explosions = $tag->getListTag("Explosions") ?? new ListTag("Explosions");
-		$explosions->push($explosion);
-		$tag->setTag($explosions);
-		$this->setNamedTagEntry($tag);
-	}
-
-	protected function getExplosionsTag(): CompoundTag {
-		return $this->getNamedTag()->getCompoundTag("Fireworks") ?? new CompoundTag("Fireworks");
-	}
-
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): bool {
-		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
-
-		$entity = Entity::createEntity("FireworksRocket", $player->getLevel(), $nbt, $this);
-
-		if($entity instanceof Entity) {
-			--$this->count;
-			$entity->spawnToAll();
-			return true;
+		$explosions = $tag->getListTag("Explosions");
+		if($explosions === null){
+			$tag->setTag("Explosions", $explosions = new ListTag());
 		}
-		return false;
+
+		$explosions->push(CompoundTag::create()
+			->setByte("FireworkType", $type)
+			->setByteArray("FireworkColor", $color)
+			->setByteArray("FireworkFade", $fade)
+			->setByte("FireworkFlicker", $flicker ? 1 : 0)
+			->setByte("FireworkTrail", $trail ? 1 : 0)
+		);
+	}
+
+	protected function getExplosionsTag(): CompoundTag
+	{
+		$tag = $this->getNamedTag()->getCompoundTag("Fireworks");
+		if ($tag === null) {
+			$this->getNamedTag()->setTag("Fireworks", $tag = CompoundTag::create());
+		}
+		return $tag;
+	}
+
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems): ItemUseResult
+	{
+		$entity = new FireworksRocket(Location::fromObject($blockReplace->getPosition()->add(0.5, 0, 0.5), $player->getWorld(), lcg_value() * 360, 90), $this);
+
+		$this->pop();
+		$entity->spawnToAll();
+		//TODO: what if the entity was marked for deletion?
+		return ItemUseResult::SUCCESS();
 	}
 }
